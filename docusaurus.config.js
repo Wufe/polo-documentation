@@ -10,11 +10,13 @@ module.exports = {
   organizationName: 'wufe', // Usually your GitHub org/user name.
   projectName: 'Polo', // Usually your repo name.
   themeConfig: {
-    // colorMode: {
-    //   defaultMode: 'dark',
-    //   disableSwitch: true,
-    //   respect
-    // },
+    colorMode: {
+      respectPrefersColorScheme: true,
+      switchConfig: {
+        darkIcon: ' ',
+        lightIcon: ' '
+      }
+    },
     navbar: {
       title: '',
       logo: {
@@ -53,7 +55,7 @@ module.exports = {
             },
             {
               label: 'Configuration',
-              to: '/docs/configuration'
+              to: '/docs/sample-configuration'
             }
           ],
         },
@@ -100,7 +102,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/facebook/docusaurus/edit/master/website/',
+            'https://github.com/Wufe/polo-documentation/edit/main/',
         },
         // blog: {
         //   showReadingTime: true,

@@ -21,7 +21,7 @@ export default function HomepageExplanation() {
                 <Spacer height={20} />
                 <h2>How does it work</h2>
                 <p>
-                    It continuously fetch a git repository.<br />
+                    It continuously fetches a git repository.<br />
                     If requested, a specific commit gets built and its application gets started, executing previously configured commands.<br />
                     The application gets indexed in a list of available sessions and the user can connect to it.
                 </p>
