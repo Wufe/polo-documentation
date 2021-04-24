@@ -1,0 +1,38 @@
+---
+sidebar_position: 1
+slug: /intro
+hide_title: true
+title: Intro
+---
+
+import { Logo } from '../src/pages/index';
+
+<Logo />
+
+Polo is a single executable application for managing the lifecycle of an application, in a precise point in time.  
+This allows to build a staging environment which can spawn multiple versions of the same application.   
+
+You decide how the application needs to be started.  
+Tipically you may want to use Docker to containerize the application and launch it using simple commands.  
+
+## Configuration files
+
+Configuration files must be placed in the same folder of the executable.  
+Once the application is started, they are continuously watched for changes.
+
+## Compatibility
+
+Polo is built for:
+- MacOS (Intel)
+- Linux AMD64
+- Windows AMD64
+
+## Glossary
+
+- **Application**: represents the main configuration (backed by a .yml file) used to start your application
+- **Checkout point**: is a single commit you may want your application to start from; it can be represented as a **branch**, a **tag** or a precise **commit hash**
+- **Session**: is an application started at a precise **checkout point**; a session gets built, navigated into, stopped and recycled
+
+## Getting started
+
+In order to get started we must follow the [installation](/docs/installation) process and configure a sample application.

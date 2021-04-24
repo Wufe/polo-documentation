@@ -1,0 +1,445 @@
+---
+sidebar_position: 2
+slug: /configuration-details
+title: Configuration details
+---
+
+## List of options
+
+If you want to look for a list of available options you may want to head to the [example-configuration.yml](https://github.com/wufe/polo-testserver) file.
+
+## Edit of a configuration
+
+As of now to add a new configuration file, you must restart the Polo service.  
+To update an existing application configuration, you don't need a restart.  
+
+## Composition
+
+A configuration file is composed by the part which controls the configuration of the entire service (i.e. **global**) and the part which configures the list of all applications (i.e. **applications**).  
+
+***
+
+### Global
+
+Sample global configuration object:
+
+```yml
+global:
+  port: 59876
+  sessions_folder: ./.sessions
+  max_concurrent_sessions: 10
+```
+
+**port**  
+Is the main port the service will listen on.
+
+**sessions_folder**  
+Is the folder path where the sessions will be stored.  
+This folder will contain copies of your defined repository based on the sessions that get started.  
+
+**max_concurrent_sessions**  
+States the max number number of sessions that may be started concurrently.  
+
+***
+
+### Applications
+
+Minimal application configuration:
+
+```yml
+applications:
+  - name: 'HelloWorld'
+    remote: 'https://github.com/lorem/ipsum'
+    commands:
+      start:
+        - command: 'lorem ipsum'
+      stop:
+        - command: 'lorem ipsum'
+  - name: 'AnotherApplication'
+    remote: ...
+```
+
+**name**  
+*required*  
+Represents the name of the application.  
+This name will be displayed into the Polo dashboard.  
+
+**remote**  
+*required*  
+The remote repository from which the code will be fetched.  
+
+**target**  
+*default: http://127.0.0.1:{{port}}*  
+Given a session started executing a list of commands, the underlying application will be listening on one or more ports.  
+This option defines where to navigate to when joining a session.  
+Polo works as a reverse proxy, so it needs a target address.  
+
+Here you can use [runtime defined variables](#runtime-defined-variables) to compose your target url.  
+These variables get created when executing start or stop commands.  
+
+The *port* variable is different though: you can create as many port variables as you want, by just adding a number to the variable *port*.  
+Polo will automatically find an available free port.  
+
+**host**  
+As a reverse proxy, Polo allows to set a Host to use while performing HTTP calls.  
+
+**is_default**  
+*default: false*  
+States whether the application should be served first.  
+This means that if a user gets onto the Polo application without passing by the dashboard (e.g. navigating to `http://localhost:8888` instead of `http://localhost:8888/_polo_/`)
+and there's an application flagged as **default** with a branch flagged as **main**, this branch will be served automatically.  
+
+**use_folder_copy**  
+*default: false*  
+When starting a session, Polo will perform a git clone of the repository by default.  
+If *use_folder_copy* is set to true, the service will perform a copy of the files instead.  
+Use this setting if you are confident about your disk IO speed and not your network speed.  
+
+**clean_on_exit**  
+*default: true*  
+If this option is set to true, the internal session folder used to start the service gets deleted once the session gets disposed.  
+
+**max_concurrent_sessions**  
+Limits the number of max concurrent sessions for this application.  
+
+***
+
+### Port
+
+Sample port configuration:  
+```yml
+port:
+  except:
+    - 9876
+```
+
+If you are planning to use a certain number of ports later on the same host, you may want to exclude these ports
+from getting used by Polo.
+
+***
+
+### Commands
+
+Commands are separted into start commands and stop commands.  
+The former get called when starting a session and the latter when stopping it.  
+
+For each command you have a set of options:  
+
+**command**  
+The actual command you are going to perform.  
+It can include a [runtime defined variable](#runtime-defined-variables) by using curly braces for interpolation.  
+
+**output_variable**  
+The output of the command gets saved into a variable called after the value of this field.  
+
+**continue_on_error**
+*default: false*  
+If this field is set to false, the execution gets halted once this command throws an error.  
+
+**timeout**  
+*default: 0 (in seconds)*  
+If this field has a value greater than 0, the command will halt if it last more than set seconds.  
+
+**working_dir**  
+*default: ./*  
+The directory from which the command will be performed.  
+
+**environment**  
+A list of `KEY=value` strings representing environment variables that will be set executing the command.  
+
+**start_healthchecking**  
+*default: false*  
+If this option is set to true, the process of healthchecking gets started as soon as this command ends its execution:
+normally the healthcheck (if configured) starts after all commands get executed.  
+
+***
+
+### Helper
+
+The helper is the element that gets added to a session to allow navigating between sessions.  
+It is an unobtrusive menu printed on a corner of the screen:
+
+import helper1 from '/img/helper/helper1.png';
+import helper2 from '/img/helper/helper2.png';
+
+<img src={helper1} alt="The session helper" width="200" />
+<img src={helper2} alt="The session helper" width="200" />
+<br /><br />
+
+Sample helper configuration:
+
+```yml
+helper:
+  position: bottom-left
+```
+
+**position**  
+*default: bottom-left*  
+Can be one of:  
+- bottom-left
+- bottom-right
+- top-left
+- top-right
+
+***
+
+### Fetch
+
+Sample fetch configuration:
+
+```yml
+fetch
+  interval: 60
+```
+
+**interval**  
+*default: 60 (in seconds)*  
+States how much time to wait to perform a fetch of all branches, tags and commits from the repository.
+
+***
+
+### Headers
+
+Sample headers configuration:
+
+```yml
+headers:
+  add: []
+  set: []
+  replace:
+    - Origin=host2.example.com
+  del:
+    - X-Powered-By
+```
+
+The **headers** configuration includes four properties for forwarding headers to the underlying application
+like a reverse proxy does:  
+- **add** allows you to add an header on each request
+- **replace** allows you to replace an existing header's value, only if that header exists on the request
+- **set** allows you to set a specific header to a specific value if that header exists or not (if it does not exist, it will be added)
+- **del** deletes an header
+
+***
+
+### Healthcheck
+
+Healthchecking is a process that helps Polo understand if an application's session is really available or not.  
+It performs HTTP requests to an endpoint to check if the underlying application is available.  
+
+If a session is not available, its status will be flagged as `degraded` and it won't be available for navigation.  
+
+Sample healthcheck configuration:  
+```yml
+healthcheck:
+  method: GET
+  url: /
+  status: 200
+  max_retries: 5
+  retry_interval: 30
+  retry_timeout: 20
+```
+
+**method**  
+*default: GET*  
+The HTTP method used for performing the request.
+
+**url**  
+*default: /*  
+The URL to be requested.
+
+**status**  
+*default: 200*  
+The status we are going to expect if the application is ready.  
+
+**max_retries**  
+*default: 5*  
+Max amount of retries before stating that the application is not available.  
+
+**retry_interval**  
+*default: 30 (in seconds)*  
+Interval used before performing a retry.  
+
+**retry_timeout**  
+*default: 20 (in seconds)*  
+The HTTP request timeout.  
+If the timeout is exceeded, the request will fail.
+
+***
+
+### Startup
+
+Sample startup configuration:
+```yml
+startup:
+  timeout: 300
+  retries: 5
+```
+
+The startup options are used while starting up a new session.  
+
+**timeout**  
+*default: 300 (in seconds)*  
+The time after which the session is considered to have failed to start.  
+If max number of retries has been reached, the session will not start again.  
+
+**retries**  
+*default: 5*  
+Amount of retries before stating that the session cannot be started.
+
+***
+
+### Recycle
+
+Sample recycle configuration:  
+```yml
+recycle:
+  inactivity_timeout: 120
+```
+
+A started session gets automatically disposed after a certain amount of seconds of inactivity.  
+To change this inactivity timeout, you must change the recycle parameter.   
+
+**inactivity_timeout**  
+*default: 3600 (in seconds)*  
+Seconds of inactivity after which the session gets automatically disposed.  
+
+***
+
+### Forwards
+
+The forward settings allow to forward specific routes to other destinations
+or to set additional settings.  
+The route is identified by a regex pattern.
+
+Sample forwards configuration:
+```yml
+forwards:
+  - pattern: ^/path/(.+)$
+    to: http://127.0.0.1:{{port2}}/$1
+    host: host2.example.com
+    headers:
+      add: []
+      set: []
+      replace:
+        - Origin=host2.example.com
+      del:
+        - X-Powered-By
+```
+
+In this sample configuration,
+when the user navigating the website hits a path like the one defined in the **pattern** field, 
+its call gets redirected to another port, setting a specific host and specific headers for that call.  
+
+We can say it sorta works like a *urlrewrite*.
+
+**pattern**  
+The regex for which the additional settings or the re-routing will be applied.  
+
+**to**  
+The destination of the re-routing.  
+Its default value is the **target** field specified in the main application configuration object.
+
+**host**  
+The HTTP host forwarded to the application.  
+
+**headers**  
+The headers to be set when hitting this path.  
+Same as [root application configuration object's headers](#headers).
+
+***
+
+### Branches  
+
+Branches configuration are branches-specific configuration.  
+
+Sample branches configuration:  
+```yml
+branches:
+  - test: ^dev$
+    watch: true # The branch will be automatically started and updated at each commit
+  - test: ^main$
+    watch: true
+    main: true
+  - test: ^feature/.*
+    watch: false
+    host: ''
+    remote: ''
+    target: ''
+    helper:
+      position: 'bottom-left'
+    forwards: []
+    headers:
+      add: []
+      del: []
+      set: []
+      replace: []
+    healthcheck:
+      method: GET
+      url: /
+    startup:
+      retries: 3
+    recycle:
+      inactivity_timeout: 1200
+    commands:
+      start: []
+      stop: []
+    port:
+      except: [9876]
+```
+
+**test**  
+Is the regex by which a branch is recognized.  
+
+**watch**  
+*default: false*  
+Allows a branch to always have a started session and to automatically refresh its content if its checkout gets updated  
+(e.g. if something new gets commited into a branch).  
+
+**main**  
+*default: false*  
+States that this branch is going to be the main branch, so if a user hits the root of the service (i.e. `http://localhost:8888` instead of `http://localhost:8888/_polo_/`)  
+its request gets automatically redirected to the **default** application's **main** branch.  
+This means that if *main* is set to true, *watch* is automatically set to true.
+
+List of settings you can add to a branch configuration, that can act as overrides of the application's:  
+- commands
+- forwards
+- healthcheck
+- helper
+- host
+- port
+- recycle
+- remote
+- startup
+- target
+- warmup
+
+***
+
+## Runtime defined variables  
+
+Some string settings like **target** or **command** can be interpolated with runtime defined variables.  
+These variables are created while starting a session, with the **output_variable** parameter,
+or by letting a command output a string formatted like this:  
+
+`polo[key=value]`
+
+For example you can provide a command like this:  
+
+```yml
+- command: 'docker run -p {{port}}:80 -d polo-testserver:{{commit}} | xargs -I % echo "polo[container_id=%]"'
+```
+
+This command prints out `polo[container_id=2ab8fc...]`.  
+This variable can thus be reused in other commands.  
+
+There's a set of already defined variables:  
+- **uuid**: the UUID of the session  
+- **name**: the name of the session; it corresponds to the branch name, the tag name or the commit id  
+- **port**: the first provided free port the session will use to start the underlying service  
+- **target**: the target URL the session will point to  
+- **commit**: the commit hash of the session  
+
+One special variable is **port**:  
+if you need more than one available port for your application, you can interpolate a *port2* or *port3*
+into your commands and these port variables will have available network ports.

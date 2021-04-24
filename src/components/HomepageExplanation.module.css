@@ -1,0 +1,10 @@
+.content {
+    padding: 2rem 0;
+    flex-direction: column;
+}
+
+[data-theme=dark] .hr {
+    border-color: var(--ifm-color-gray-800);
+    border-width: 1px;
+}
+

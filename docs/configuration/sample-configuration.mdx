@@ -1,0 +1,52 @@
+---
+sidebar_position: 1
+slug: /sample-configuration
+title: Sample configuration
+--- 
+
+## Creation
+
+We are now creating a sample configuration which serves a generic application using docker.
+
+Copy and paste this yaml configuration into a file named **test-server.yml*+ and place it in the same folder of the executable:
+```yml
+applications:
+  - name: TestServer
+    remote: "https://github.com/wufe/polo-testserver"
+    is_default: true
+    commands:
+      start:
+        - command: docker build --no-cache -t polo-testserver:{{commit}} .
+        - command: docker run -p {{port}}:3000 -d polo-testserver:{{commit}}
+          output_variable: container_id
+        - command: docker image prune -f
+          continue_on_error: true
+      stop:
+        - command: "docker kill {{container_id}}"
+          continue_on_error: true
+        - command: docker rm -f {{container_id}}
+          continue_on_error: true
+        - command: docker image prune -f -a --filter label=name=polo-test-server
+    recycle:
+      inactivity_timeout: 180
+    startup:
+      retries: 5
+    branches:
+      - test: ^dev$
+        watch: true
+```
+
+Restart Polo and head to `http://localhost:8888` (8888 is the default port).  
+You should now see the application TestServer.  
+
+It will take a while to load the application the first time (depending on connection speed).  
+
+In the dashboard you should see the list of all available branches and tags to create a session from.
+
+## Overview
+
+With this sample file we are configurating an application called **TestServer**.  
+Its main repository is **https://github.com/wufe/polo-testserver**.  
+There are a list of commands for starting and stopping the application.  
+
+Further info about the configuration options can be found in the [next page](/docs/configuration-details).
