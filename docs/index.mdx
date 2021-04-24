@@ -1,16 +1,21 @@
 ---
 sidebar_position: 1
-slug: /intro
+slug: /
 hide_title: true
 title: Intro
 ---
 
-import { Logo } from '../src/pages/index';
+import Logo from '../src/components/Logo';
+import DemoButton from '../src/components/DemoButton';
 
 <Logo />
+<DemoButton />
+
 
 Polo is a single executable application for managing the lifecycle of an application, in a precise point in time.  
 This allows to build a staging environment which can spawn multiple versions of the same application.   
+
+The many versions of the same application get served by its reverse-proxy functionality.
 
 You decide how the application needs to be started.  
 Tipically you may want to use Docker to containerize the application and launch it using simple commands.  
@@ -35,4 +40,4 @@ Polo is built for:
 
 ## Getting started
 
-In order to get started we must follow the [installation](/docs/installation) process and configure a sample application.
+In order to get started we must follow the [installation](/installation) process and configure a sample application.

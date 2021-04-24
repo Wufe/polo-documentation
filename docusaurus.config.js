@@ -47,15 +47,15 @@ module.exports = {
           items: [
             {
               label: 'Tutorial',
-              to: '/docs/intro',
+              to: '/',
             },
             {
               label: 'Installation',
-              to: '/docs/installation'
+              to: '/installation'
             },
             {
               label: 'Configuration',
-              to: '/docs/sample-configuration'
+              to: '/sample-configuration'
             }
           ],
         },
@@ -98,7 +98,7 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          routeBasePath: '/docs/',
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:

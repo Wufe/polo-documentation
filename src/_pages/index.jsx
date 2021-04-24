@@ -8,6 +8,7 @@ import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
 import HomepageExplanation from '../components/HomepageExplanation';
 import Spacer from '../components/Spacer';
+import Logo from '../components/Logo';
 
 function HomepageHeader() {
   return (
@@ -33,20 +34,7 @@ function HomepageHeader() {
       </div>
     </header>
   );
-}
-
-export function Logo() {
-  const {isDarkTheme} = useThemeContext();
-  return <div align="center">
-      {isDarkTheme && <img src="/img/white-no-background.svg" width="400" />}
-      {!isDarkTheme && <img src="/img/color-no-background.svg" width="400" />}
-      <Spacer height={20} />
-      <h1 align="center">Polo</h1>
-      <hr />
-      <p className={styles.tagline}>Serve your application development branches</p>
-      <Spacer height={50} />
-    </div>
-}
+  }
 
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
