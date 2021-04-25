@@ -1,0 +1,24 @@
+---
+sidebar_position: 2
+title: 'Run inside docker'
+slug: /dockerized
+---
+
+TODO
+
+Example: [dockerized-testserver.yml](https://github.com/Wufe/Polo/blob/main/docker/dockerized-testserver.yml)
+
+```bash
+docker network create polo-net
+```
+
+```bash
+docker run -d \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v "$(pwd)/application.yml:/app/application.yml" \
+    --name polo \
+    -p 7777:7777 \
+    -w /app \
+    --network polo-net \
+    kesshin/polo
+```
