@@ -10,6 +10,9 @@ module.exports = {
   organizationName: 'wufe', // Usually your GitHub org/user name.
   projectName: 'Polo', // Usually your repo name.
   themeConfig: {
+    prism: {
+      additionalLanguages: ['ini']
+    },
     colorMode: {
       respectPrefersColorScheme: true,
       switchConfig: {

@@ -4,13 +4,27 @@ title: 'Run inside docker'
 slug: /dockerized
 ---
 
-TODO
+Polo can also be run inside a docker container.  
+Since the common use case of Polo is to run containers itself, we use an image capable of connecting to the host container socket.  
 
-Example: [dockerized-testserver.yml](https://github.com/Wufe/Polo/blob/main/docker/dockerized-testserver.yml)
+## The configuration
+
+The containers Polo will run need to start on the same network of the Polo's container, in order to perform a direct connection to them.  
+
+Here there's an [example testserver.yml](https://github.com/Wufe/Polo/blob/main/docker/dockerized-testserver.yml) that makes use of these concepts.  
+As you may notice, we don't need to expose the session containers' ports anymore since we are performing a direct container-to-container connection.  
+The connection is performed using the short container id (first 12 characters).
+
+## Usage
+
+- We first need to create a shared network.  
+    This will get used by Polo and the containers it is going to start.
 
 ```bash
 docker network create polo-net
 ```
+
+- We then start polo linking the configuration file and the docker socket.
 
 ```bash
 docker run -d \
@@ -20,5 +34,5 @@ docker run -d \
     -p 7777:7777 \
     -w /app \
     --network polo-net \
-    kesshin/polo
+    kesshin/polo:v1.0.0-beta9
 ```

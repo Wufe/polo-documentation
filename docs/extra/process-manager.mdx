@@ -5,4 +5,29 @@ sidebar_position: 1
 
 # Using a process manager
 
-TODO
+In order to install Polo as a service we can use a process manager like [supervisord](http://supervisord.org/).
+
+## Sample supervisord configuration
+
+> /etc/supervisor.d/polo.ini
+
+```ini
+[program:polo]
+directory=/home/polo/release
+command=/bin/zsh -c "./polo"
+process_name=polo-%(process_num)s
+numprocs=1
+numprocs_start=1
+
+user=polo
+
+autostart=true
+autorestart=false
+startsecs=15
+stopsignal=TERM
+
+stdout_logfile=/home/polo/release/control.log
+stderr_logfile=/home/polo/release/control_err.log
+stdout_logfile_maxbytes=2MB
+
+```
