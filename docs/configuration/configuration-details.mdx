@@ -75,7 +75,7 @@ This option defines where to navigate to when joining a session.
 Polo works as a reverse proxy, so it needs a target address.  
 
 Here you can use [runtime defined variables](#runtime-defined-variables) to compose your target url.  
-These variables get created when executing start or stop commands.  
+These variables get created when executing start, stop or clean commands.  
 
 The *port* variable is different though: you can create as many port variables as you want, by just adding a number to the variable *port*.  
 Polo will automatically find an available free port.  
@@ -120,8 +120,9 @@ from getting used by Polo.
 
 ### Commands
 
-Commands are separted into start commands and stop commands.  
-The former get called when starting a session and the latter when stopping it.  
+Commands are separted into start, stop and clean commands.  
+The first get called when starting a session, the second when stopping it and the third when cleaning it.  
+The cleaning process starts when a session fails to start and after a session gets stopped.  
 
 For each command you have a set of options:  
 
@@ -383,6 +384,7 @@ branches:
     commands:
       start: []
       stop: []
+      clean: []
     port:
       except: [9876]
 ```
