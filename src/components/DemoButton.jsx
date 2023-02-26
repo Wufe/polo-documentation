@@ -6,7 +6,7 @@ export default function DemoButton() {
     return <div align="center">
         <Link
             className="button button--primary button--lg"
-            to="https://polo-testserver.bembi.dev">
+            to="https://testserver.polo.bembi.dev">
             Check the demo
         </Link>
         <Spacer height={50} />
